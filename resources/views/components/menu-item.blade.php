@@ -5,26 +5,34 @@ ul, li {
 </style>
 
 <div>
-    <!-- He who is contented is rich. - Laozi -->
-    @if (!empty ($permissions))
-        <li class="nav-item">
-            @if (!empty ($permissions) && in_array($menuItem->id, $permissions))
-                @if($menuItem->children->count())
-                    <a class="nav-link" href="{{ $menuItem->url }}" onclick="toggleMenu(event, '{{ $menuItem->id }}')">
-                        {{ $menuItem->title }}
-                        <i class="fas fa-chevron-down"></i> <!-- Arrow icon -->
-                    </a>
-                @else
+    @if ($menuItem->children->count())
+        @if (!empty ($permissions) && in_array($menuItem->id, $permissions))
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" onclick="toggleMenu(event, '{{ $menuItem->id }}')">
+                    {{ $menuItem->title }}
+                </a>
+        @endif
+    @else
+        @if (!empty ($permissions) && in_array($menuItem->id, $permissions))
+            <li class="nav-item">
+                @if (!$menuItem->parent_id)
                     <a class="nav-link" href="{{ $menuItem->url }}">{{ $menuItem->title }}</a>
                 @endif
-            @endif
-            @if($menuItem->children->count())
-                <ul class="nav flex-column ml-3 collapse" id="menu-{{ $menuItem->id }}">
-                    @foreach($menuItem->children as $child)
-                        <x-menu-item :menuItem="$child" :permissions="$permissions"/>
-                    @endforeach
+        @endif
+    @endif
+        @if ($menuItem->children->count())
+            @if (!empty ($permissions) && in_array($menuItem->id, $permissions))
+                <ul>
+                    <div class="dropdown-menu" id="menu-{{ $menuItem->id }}">
+                        @foreach($menuItem->children as $child)
+                            <a class="dropdown-item" href="{{ $child->url }}">{{ $child->title }}</a>
+                            <x-menu-item :menuItem="$child" :permissions="$permissions"/>
+                        @endforeach
+                    </div>
                 </ul>
             @endif
+        @endif
+    @if (!empty ($permissions) && in_array($menuItem->id, $permissions))
         </li>
     @endif
 
